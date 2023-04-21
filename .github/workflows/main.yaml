@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  release:
+      types: [published]
+  push:
+      branches:
+        - main
+#  pull_request:
+#    branches:
+#        "*"
+
+env:
+  PROJECT_NAME: GitHubActionTest
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: checkout
+      - uses: action/checkout@v1
+
+      - name: Install distribution dependencies
+        run: pip install --upgrade twine setuptools wheel
+
+      - name: Create distribution package
+        run: python setup.py sdist bdist_wheel
+
+      - name: Upload distribution package
+        uses: actions/upload-artifact@master
+
+    publish:
+        runs-on: macos-latest
+        needs: build
+        if: github.event_name == 'release'
+        steps:
+        - name: Download a distribution artifact
+          uses: actions/download-artifact@v2
+          with:
+            name:dist-package
+            path:dist
+
+        - name: Publish distribution to Test PyPi
+          uses: pypa/gh-action-pypi-publish@master
+          with:
+            skip_existing: true
+            user: __token__
+            password: ${{secrets.test_Pypi_password}}
+            repository_url: https://test.pypi.org/legacy/
+
