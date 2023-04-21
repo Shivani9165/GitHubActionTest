@@ -1,6 +1,7 @@
 name: Build
 
 on:
+  workflow_dispatch:
   release:
       types: [published]
   push:
@@ -29,6 +30,7 @@ jobs:
 
       - name: Upload distribution package
         uses: actions/upload-artifact@master
+
 
     publish:
         runs-on: macos-latest
