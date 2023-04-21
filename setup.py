@@ -19,5 +19,4 @@ setup(
              "testsparq=testsparq.__main__:main",
          ]
     },
-
 )
